@@ -216,14 +216,14 @@ The pipe is a powerful way to combine multiple data wrangling steps in a way tha
 
 To avoid having to use `<-` to save our intermediate dataframes, we can chain all the steps together using the pipe ` %>% `
 
-Here is a simple example.  In the above examples, often I had to create an object called `df` and then use `he*ad()` to view the result.  E.g.
+Here is a simple example.  In the above examples, often I had to create an object called `df` and then use `head()` to view the result.  E.g.
 
 ```{r, eval = FALSE}
 df <- filter(airquality, Month == 5)
 head(df)
 ```
 
-I can do this in one step using the pipe as follows:
+To avoid creating a new object that I'm not very interested in I can use the pipe as follows:
 
 ```{r}
 filter(airquality, Month == 5) %>% 
@@ -250,7 +250,7 @@ result <- airquality %>%
   filter(Wind_kmph < 7)
 ```
 
-The benifit of writing code like this is that all the steps of the analysis become clear.  Rading from top to bottom I can see that I started with the `airquality` dataframe, then I created a new column using `mutate()` and then I fitered using the new column I created.
+The benifit of writing code like this is that all the steps of the analysis become clear.  Reading from top to bottom I can see that I started with the `airquality` dataframe, then I created a new column using `mutate()` and then I fitered using the new column I created.
 
 
 To save you typing the Rstudio shortcut for the pipe is Ctrl + Shift + m
@@ -258,13 +258,84 @@ To save you typing the Rstudio shortcut for the pipe is Ctrl + Shift + m
 
 ### **Summarise using `summarise()`**
 
-Grouping stuff - now using the pipe as well
+From now on we will use the `%>%` to chain together our functions.
+
+We will use the `tips` dataset.  Load the data by running
+
+```{r, results = F}
+data(tips, package = "reshape2")
+```
+
+Get a feeling for the data using `head()`
+
+```{r}
+head(tips)
+```
+
+Note that we now have several categorical variables.  Suppose that we are interested in whether the sex of the tipper is related to the size of the tip.  
+
+We can use `group_by()` to split the dataframe by `sex` and then use the `summarise()` function to calculate statistics for each group.
+
+For example, to calculate the mean tip for each Male and Female:
+
+```{r}
+tips %>% 
+  group_by(sex) %>% 
+  summarise(mean_tip = mean(tip))
+```
+
+We can group by multiple variables, for example grouping by `sex` and `smoker`:
+
+```{r}
+tips %>% 
+  group_by(sex, smoker) %>% 
+  summarise(mean_tip = mean(tip))
+```
+
+Note that we now have 4 possible combinations of each smoker.
+Suppose we were worried that the sample size in each group was quite low, we could add a column that counts the number of records in each group using the `n()` function.
+
+```{r}
+tips %>% 
+  group_by(sex, smoker) %>% 
+  summarise(mean_tip = mean(tip),
+            group_size = n())
+```
+
+These sample sizes look pretty good!
+
+We can define our own functions within `summarise()` to create summaries we are interested in.  
+
+For example, say we are interested in tip as a percentage of the total bill.  We could do:
+
+```{r}
+tips %>% 
+  summarise(mean_tip_percentage = mean(tip/total_bill))
+```
+
 
 ### **Exercises**
+
+1.  Group by the data by `sex` and calculate the standard deviation of tips in each group.  Are there any differences?  Is one group more variable than the other?
+2.  Calculate the mean tip size for smokers and non-smokers.  What is the sample size of each group?
+3.  We saw that total tip differed by `Sex`.  Is the same true for tip percentage?
 
 ## **Data Visualisation**
 
 The above functions are useful in themselves, but to gain more insights into the data we should combine them with the powerful plotting library `ggplot2`
+
+Often a single plot can show you as much information as many different `summarise()` calls.
+
+For example:
+
+```{r}
+ggplot(tips) +
+  geom_jitter(aes(x = smoker, y = tip, colour = sex))
+```
+
+From this plot we can learn things about sample size, the likely mean and standard deviation of various groups (gender and smoker).  I.e.  almost all the information we got in the previous section in one plot!
+
+This section will teach you how to make plots like the above.
 
 ### **The Grammar of Graphics**
 
@@ -381,8 +452,9 @@ These exercises combine the features of `dplyr` and `ggplot2` together.
 Pipe + wrangle to get summaries, then pipe into ggplot() to get plot
 Introduce some other ggplot geoms here
 
+Plot model outputs as well?
 
-Plot model outputs as well
+1.  Using the `tips` dataset, create a new column calculating the percentage tip  (so if bill was £10 and tip was £1 then the tip percentage was 10%) and investigate whether `sex`, `day`, or `size` affected the percentage tip. Use whatever plots you feel appropriate
 
 
 ## **Further Resources**
