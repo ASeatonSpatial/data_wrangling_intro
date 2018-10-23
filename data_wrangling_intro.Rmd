@@ -6,7 +6,7 @@ output: html_document
 
 ```{r, setup, results = F, message = F, warning = F, echo = F}
 
-knitr::opts_chunk$set(cache = T)
+knitr::opts_chunk$set(cache = T, highlight = T)
 
 
 ```
@@ -60,12 +60,19 @@ Some things to note here:  we did not have to put the column name in quotation m
 We also see there are some NAs in the data.
 We can use the `is.na()` function to explore this further.
 
-```{r}
-is.na(3)
-is.na(NA)  
+```{r, eval = FALSE}
+is.na(3)   # returns FALSE because 3 is not NA
+is.na(NA)   # returns TRUE
+```
 
+We can use this to get rows where a column is `NA`.  For example:
+
+```{r}
 filter(airquality, is.na(Solar.R))
 ```
+
+returns all rows where there is an `NA` in the `Solar.R` column.  
+
 
 We can filter by exact values, if you want to save the output, instead of just printing to console, use the assignment `<-` operator.  Often we do this if the subset contains more rows than is useful to print.
 
@@ -86,34 +93,168 @@ We can build more complicated expressions using logical operators such as `&, |,
 A final useful expression is the `%in%` operator.  This checks whether an object is within a list of possible values.  E.g. to select all May and June data:
 
 ```{r, eval = F}
-MayJune_data <- filter(airquality, Month %in% c(5,6))
+filter(airquality, Month %in% c(5,6))
 ```
 
 ### **Exercises** 
 
 1. Filter the aiquality data to obtain all records in August
 2. Further filter the August data to see only records with Temperature between 60 and 65
-3. Select all records on the first 5 days of each month.
-4. Calling filter() once only, select all records on the first 5 days of June and July
+3. Filter to get all records where Ozone is not `NA`.  HINT:  recall the NOT operator `!`  e.g.  `!(Temp < 60)` is equivalent to `Temp >= 60`    
+4. Select all records on the first 5 days of each month.
+5. Calling filter() once only, select all records on the first 5 days of June and July
 
 ### **Subset by columns using `select()`**
 
-blah blah blah 
+We can filter by columns using the `select()` function. The syntax is similar, the first argument is the dataframe, the following arguments select the columns. 
 
+For example, to select only the Temp column:
+
+```{r}
+df <- select(airquality, Temp)
+head(df)
+
+```
+
+To select more than one column, separate the names by a comma:
+
+```{r}
+df <- select(airquality, Month, Temp)
+head(df)
+
+```
+
+You can also use `select()` to drop columns using a `-` sign in front of the column name.  For example, to select all columns except `Month`:
+
+```{r}
+df <- select(airquality, -Month)
+head(df)
+```
+
+To select all columns between `Ozone` and `Temp` you can use the `:` between the column names:
+
+```{r}
+df <- select(airquality, Ozone:Temp)
+head(df)
+```
 
 ### **Exercises**
 
-Do this stuff
+1. Does the ordering of the column names matter?  Try running `select(airquality, Month, Temp)` and `select(airquality, Temp, Month)`
+2. Drop all columns between `Ozone` and `Wind`    HINT:  you will need to use `-` and `()` 
+3. Try running the following:  `select(airquality, Wind, everything())`.  What is the everything() function doing here?
 
 ### **Create new variables using `mutate()`**
 
-blah blah
+`mutate()` is one of `dplyr`'s most powerful functions.  We use it to create new columns derived from existing ones.  Again, the first argument is always the dataframe we are working on (we will see shortly that is very deliberate).  Subsequent arguments are instructions to create new columns.
+
+For example, the `Wind` column has wind speed in units of miles per hour.  To convert this to kilometres per hour, using conversion factor 1 mph = 1.609 kmph, we can do:
+
+```{r}
+df <- mutate(airquality, Wind_kmph = 1.609 * Wind)
+head(df)
+```
+
+Notice how now there is a new column, appended on the end.  The column name is what we declared on the left hand side of the expression `Wind_kmph = 1.609 * Wind`.
+
+The right hand side are the instructions on what numbers to put into the new column.
+
+We can define our own functions and use them within `mutate()`.  For example, below is a function that takes a single number between 5 and 9 as input and returns the month as a word.  
+
+```{r}
+month_conversion <- function(x){
+  
+  if (x == 5) month <- "May"
+  else if (x == 6) month <- "June"
+  else if (x == 7) month <- "July"
+  else if (x == 8) month <- "August"
+  else if (x == 9) month <- "September"
+  else month <- NA
+  
+  return(month)
+}
+
+month_conversion(6)
+```
+
+To use this within mutate, we combine it with `sapply()` which iterates functions over each element of a vector.  So when we supply the `Month` vector, it run this function on each element:
+
+```{r}
+df <- mutate(airquality, Month_long = sapply(Month, month_conversion)) 
+head(df)
+```
+
+If you only want to keep the new variable(s) created, use `transmute()`:
+
+```{r}
+df <- transmute(airquality, Month_long = sapply(Month, month_conversion)) 
+head(df)
+```
+
+You can create any number of new variables at once, separated by a comma.
+For example, the two new variables above could be done in one step using:
+
+```{r}
+df <- transmute(airquality,
+                Wind_kmph = 1.609 * Wind,
+                Month_long = sapply(Month, month_conversion)
+                )
+
+head(df)
+
+```
 
 ### **Exercises**
 
+1.  The `Temp` column is in degrees Farenheit.  Create a new column with temperature in degrees Celsius.  HINT: The conversion formula is  $T_c = \frac{5}{9}(T_f - 32)$
+2.  Create a function that takes a number between 5 and 9 and returns which season the month falls under.  e.g.  5 should return "Spring", 6 should return "Summer" etc.
+3.  Use this function and `sapply()` to create a new "Season" column
+
 ### **Introducing the pipe:  ` %>% `**
 
-This wee gem
+The pipe is a powerful way to combine multiple data wrangling steps in a way that is intuitive and readable.  Often there are multiple steps we want to do - e.g. create a new column then use it to filter.  
+
+To avoid having to use `<-` to save our intermediate dataframes, we can chain all the steps together using the pipe ` %>% `
+
+Here is a simple example.  In the above examples, often I had to create an object called `df` and then use `he*ad()` to view the result.  E.g.
+
+```{r, eval = FALSE}
+df <- filter(airquality, Month == 5)
+head(df)
+```
+
+I can do this in one step using the pipe as follows:
+
+```{r}
+filter(airquality, Month == 5) %>% 
+  head()
+```
+
+The pipe ` %>% ` takes the output of the previous function and uses it as the **first argument** of the following function.
+
+This is why all `dplyr` functions always take a dataframe as the first argument, so you can use the pipe to link together multiple steps!
+
+For example, to create a kmph wind speed variable, and then filter by wind speed less than 7 kmph I could do:
+
+```{r}
+airquality %>%    # airquality passed as first argument to mutate()
+  mutate(Wind_kmph = 1.609 * Wind) %>%      # result of mutate() passed to filter()
+  filter(Wind_kmph < 7)
+```
+
+If I wanted to save this as a new object, I use the assignment operator at the top:
+
+```{r, eval = F}
+result <- airquality %>%
+  mutate(Wind_kmph = 1.609 * Wind) %>%
+  filter(Wind_kmph < 7)
+```
+
+The benifit of writing code like this is that all the steps of the analysis become clear.  Rading from top to bottom I can see that I started with the `airquality` dataframe, then I created a new column using `mutate()` and then I fitered using the new column I created.
+
+
+To save you typing the Rstudio shortcut for the pipe is Ctrl + Shift + m
+
 
 ### **Summarise using `summarise()`**
 
