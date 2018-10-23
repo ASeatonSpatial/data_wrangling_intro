@@ -226,7 +226,7 @@ str(tips)
 ```
 
 ### **Exercises**
-1. Start by making a simple scatterplot with `total_bill` in the x-axis and `tip` on the y-axis.
+1. Start by making a simple scatterplot with `total_bill` in the x-axis and `tip` on the y-axis. Add a colour aethetic for `sex`.
 
 
 ### **Making it pretty**
