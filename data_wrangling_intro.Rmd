@@ -359,15 +359,37 @@ ggplot(data = iris, aes(x =Sepal.Length, y = Sepal.Width)) +
 What happens when you map `Species` to another aesthetic at the same time?
 
 ### **More geometries**
-So far, we have seen a scatterplot with `geom_smooth`, a histogram with `geom_histogram` and a boxplot with `geom_boxplot`. With a new dataset, we'll explore some more advanced geometries.
+
+So far, we have seen a scatterplot with `geom_point`, a histogram with `geom_histogram` and a boxplot with `geom_boxplot`. With a new dataset, we'll explore some more advanced geometries.
 
 ```{r, eval = T}
 data(tips, package = 'reshape2')
 str(tips)
 ```
+```{r, eval = T, echo = FALSE}
+ggplot(data = tips, aes(x = total_bill, y = tip)) +
+  geom_point(aes(color = sex)) +
+  geom_smooth()
+```
+
+Be careful when using geometries to fit smooth lines or densities. These are great tools for a first exploration but unless you understand exactly how they are generated, do not rely on them for inference.
 
 ### **Exercises**
-1. Start by making a simple scatterplot with `total_bill` in the x-axis and `tip` on the y-axis. Add a colour aethetic for `sex`.
+
+1. Start by making a simple scatterplot with `total_bill` in the x-axis and `tip` on the y-axis. Add a colour aethetic for `time`.
+
+2. Add a linear regression line to the plot by using `geom_smooth(method = "lm")`. What happens when you change the method to `"loess"`? What seems more appropriate for this data?
+
+3. Add a regression line for each of the different times of day. You can do that by adding an aesthetic to `geom_smooth`, for example `aes(colour = time)`. Try other aesthetics like linetype too.
+
+4. Similar to `facet_wrap` in exercise 5 of the previous section, `facet_grid` allows you to do the same thing for two categorical variables. Try adding the following to your plot. What do the empty cells mean?
+```{r, results = F, eval = F}
+  + facet_grid(time ~ day)
+```
+
+5. 
+
+
 
 
 ### **Making it pretty**
