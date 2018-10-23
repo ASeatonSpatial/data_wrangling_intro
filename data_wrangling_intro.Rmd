@@ -1,0 +1,260 @@
+---
+title:  "Data Wrangling and Visualisation in R:  An Introduction to the Tidyverse"
+author:  Andy Seaton and Fanny Empacher
+output: html_document
+---
+
+```{r, setup, results = F, message = F, warning = F, echo = F}
+
+knitr::opts_chunk$set(cache = T)
+
+
+```
+
+## **Introduction**
+
+This material borrows heavily from the excellent textbook "R for Data Science" by Hadley Wickham.  The textbook is available online for free at http://r4ds.had.co.nz/ 
+
+We encourage you to see these notes as a starting point for further learning - 2 hours is not enough time to learn very much!  
+
+## **Set up**
+
+Create as many R scripts as you feel you need to work through the material.  You can save it all in one long script or save a script for each section.
+
+At the top of each script you should load the required packages and data:
+
+```{r, results = F, message = F, warning = F}
+library(ggplot2)   # plotting library
+library(dplyr)    # data manipulation
+data("airquality")
+```
+
+
+## **Data manipulation**
+
+This section covers five main features of the `dplyr` package
+
+* subset by rows using `filter()`
+* subset by columns using `select()`
+* create new columns using `mutate()`
+* collapse data into summaries using `summarise()`
+
+We will be using the `airquality` data that comes with base R.  To get a feel for a dataset you have not seen before, the `str()` and `head()` functions are useful.  Try running the following and look at the output:
+
+```{r, eval = F}
+head(airquality)
+str(airquality)
+?airquality     # base R datasets come with documentation
+```
+
+### **Subset by rows using `filter()`**
+
+`filter()` allows you to subset a dataframe by setting conditions on values in the data.  The first argument is the dataframe, followed by an expression used to filter the data.
+
+```{r}
+filter(airquality, Temp < 58)
+```
+
+Some things to note here:  we did not have to put the column name in quotation marks as "Temp".  `dplyr` knows the difference.  The above expression `Temp < 58` has returned all rows with temperature less than 58 degrees.
+
+We also see there are some NAs in the data.
+We can use the `is.na()` function to explore this further.
+
+```{r}
+is.na(3)
+is.na(NA)  
+
+filter(airquality, is.na(Solar.R))
+```
+
+We can filter by exact values, if you want to save the output, instead of just printing to console, use the assignment `<-` operator.  Often we do this if the subset contains more rows than is useful to print.
+
+```{r}
+June_data <- filter(airquality, Month == 6)
+nrow(June_data)  # a lot of rows to print
+head(June_data)  # can have a glance using head()
+```
+
+And can include multiple expressions separated by a comma:
+
+```{r}
+filter(airquality, Month == 5, Temp < 60)
+```
+
+We can build more complicated expressions using logical operators such as `&, |, ==`.
+
+A final useful expression is the `%in%` operator.  This checks whether an object is within a list of possible values.  E.g. to select all May and June data:
+
+```{r, eval = F}
+MayJune_data <- filter(airquality, Month %in% c(5,6))
+```
+
+### **Exercises** 
+
+1. Filter the aiquality data to obtain all records in August
+2. Further filter the August data to see only records with Temperature between 60 and 65
+3. Select all records on the first 5 days of each month.
+4. Calling filter() once only, select all records on the first 5 days of June and July
+
+### **Subset by columns using `select()`**
+
+blah blah blah 
+
+
+### **Exercises**
+
+Do this stuff
+
+### **Create new variables using `mutate()`**
+
+blah blah
+
+### **Exercises**
+
+### **Introducing the pipe:  ` %>% `**
+
+This wee gem
+
+### **Summarise using `summarise()`**
+
+Grouping stuff - now using the pipe as well
+
+### **Exercises**
+
+## **Data Visualisation**
+
+The above functions are useful in themselves, but to gain more insights into the data we should combine them with the powerful plotting library `ggplot2`
+
+### **The Grammar of Graphics**
+
+There are three essential elements in the grammar of graphics.
+
+| Element  |      Description     |  Examples |
+|----------|------------------|------------|
+| Data |  The dataset being plotted | iris, airquality |
+| Aesthetics |    Scales onto which we map our data  |  position (x, y), colour, shape, size, fill |
+| Geometries | Visual elements in the plot| points, lines, text, bar |
+
+`ggplot` uses these elements to create plots. The basic syntax looks like this:
+
+```{r, eval = F, results = F, message = F, warning = F}
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+### **Example plots **
+We now look at some example to show how to apply this basic syntax to real data. As data, we're using the `iris` dataset from base R.
+
+```{r, results = T}
+str(iris)
+```
+
+
+#### **1. Scatterplot**
+
+| Element  |Example|
+|----------|------------|
+| Data |  iris|
+| Aesthetics | x =  Sepal.Length, y = Sepal.Width |
+| Geometries | points |
+
+```{r, results = T}
+ggplot(data = iris) + 
+  geom_point(aes(x = Sepal.Length, Sepal.Width))
+```
+
+#### **2. Scatterplot and colour**
+
+| Element  |Example|
+|----------|------------|
+| Data |  iris|
+| Aesthetics | x =  Sepal.Length, y = Sepal.Width, colour = Species|
+| Geometries | points |
+
+We can place the aesthetics either in the `ggplot` function and set them globally for the whole plot, or in the `geom` function and set them only for that geometry.
+
+```{r, results = T}
+ggplot(data = iris, aes(x = Sepal.Length, Sepal.Width)) + 
+  geom_point(aes(colour = Species))
+```
+
+#### **3. Group and boxplot**
+
+| Element  |Example|
+|----------|------------|
+| Data |  iris|
+| Aesthetics | x = Species, y = Sepal.Length|
+| Geometries | points |
+
+```{r, results = T}
+ggplot(iris, aes(x = Species, y = Sepal.Length)) + 
+  geom_boxplot(fill = "blue")
+```
+
+Note that the aesthetic `fill` has not been mapped to any data but was set manually.
+
+### **Exercises**
+
+1. Run the code below. Why are the points not blue? Fix the code so that they are.
+
+```{r, results = F, eval = F}
+ggplot(data = iris, aes(x =Sepal.Length, y = Sepal.Width)) + 
+  geom_point(mapping = aes(color = "blue"))
+```
+
+2. Using `geom_histogram`, make a histogram for one of the continuous columns of the `iris` dataset. Fill it in a colour of your choice.
+
+3. Start with the code from Example 2. Change it so that `Species` is now mapped to `shape` instead of `colour`. Which plot do you find more informative? What happens if you map `Species` to `size`?
+
+4. Start with the code from example 1. Try and include `Petal.Length` by mapping it to the different aesthetics `colour`, `size` and `shape`. How does the behaviour of these aesthetics differ for continuous vs. categorical variables?
+
+5. Another aethetic to add additional variables to the plot are **facets* which split your plot into subplots. 
+
+```{r, results = F, eval = F}
+ggplot(data = iris, aes(x =Sepal.Length, y = Sepal.Width)) + 
+  geom_point() +
+  facet_wrap(~ Species, nrow = 2)
+```
+What happens when you map `Species` to another aesthetic at the same time?
+
+### **More geometries**
+So far, we have seen a scatterplot with `geom_smooth`, a histogram with `geom_histogram` and a boxplot with `geom_boxplot`. With a new dataset, we'll explore some more advanced geometries.
+
+```{r, eval = T}
+data(tips, package = 'reshape2')
+str(tips)
+```
+
+### **Exercises**
+1. Start by making a simple scatterplot with `total_bill` in the x-axis and `tip` on the y-axis.
+
+
+### **Making it pretty**
+labels, legends, titles, manual colours (diamonds?), gg_themes, different scales?
+
+
+### **Advanced Exercises**
+
+These exercises combine the features of `dplyr` and `ggplot2` together.
+
+Pipe + wrangle to get summaries, then pipe into ggplot() to get plot
+Introduce some other ggplot geoms here
+
+
+Plot model outputs as well
+
+
+## **Further Resources**
+
+See the following resources for more information on the tidyverse
+We have just scratched the surface of `dplyr` and `ggplot2` and there are many other packages as well.
+
+* "R for Data Science" by Hadley Wickham, http://r4ds.had.co.nz/
+* ggplot2 website - lots of tips and tricks https://ggplot2.tidyverse.org/
+* tidyverse website - an overview of other related packages that are designed to help your analysis workflow https://www.tidyverse.org/packages/
+* 
+* https://stackoverflow.com/ is a great place to search for tidyverse related questions.  Chances are your problem has been encountered before!  Search for package related questions using the tags e.g. [ggplot2]
+
+
+
+
