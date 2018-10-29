@@ -354,6 +354,7 @@ ggplot(data = <DATA>) +
   <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
 ```
 
+
 ### **Example plots **
 We now look at some example to show how to apply this basic syntax to real data. As data, we're using the `iris` dataset from base R.
 
@@ -363,6 +364,8 @@ str(iris)
 
 
 #### **1. Scatterplot**
+
+If you don't know what's going with your data yet, a scatterplot is usually a good place to start. In a scatterplot, two continuous variables are mapped to x and y coordinates.
 
 | Element  |Example|
 |----------|------------|
@@ -377,13 +380,15 @@ ggplot(data = iris) +
 
 #### **2. Scatterplot and colour**
 
+We can extend the above plot to include information about the species by mapping `Species` to another aesthetic.
+
 | Element  |Example|
 |----------|------------|
 | Data |  iris|
 | Aesthetics | x =  Sepal.Length, y = Sepal.Width, colour = Species|
 | Geometries | points |
 
-We can place the aesthetics either in the `ggplot` function and set them globally for the whole plot, or in the `geom` function and set them only for that geometry.
+Aesthetics can be placed either in the `ggplot` function and so set globally for the whole plot, or in the `geom` function and so set only for that geometry.
 
 ```{r, results = T}
 ggplot(data = iris, aes(x = Sepal.Length, Sepal.Width)) + 
@@ -392,11 +397,13 @@ ggplot(data = iris, aes(x = Sepal.Length, Sepal.Width)) +
 
 #### **3. Group and boxplot**
 
+Often, we don't have two continuous variables but want to explore the relationship of a continuous and a discrete variable. A boxplot can be a good way to visualise this.
+
 | Element  |Example|
 |----------|------------|
 | Data |  iris|
 | Aesthetics | x = Species, y = Sepal.Length|
-| Geometries | points |
+| Geometries | boxplot |
 
 ```{r, results = T}
 ggplot(iris, aes(x = Species, y = Sepal.Length)) + 
@@ -414,11 +421,11 @@ ggplot(data = iris, aes(x =Sepal.Length, y = Sepal.Width)) +
   geom_point(mapping = aes(color = "blue"))
 ```
 
-2. Using `geom_histogram`, make a histogram for one of the continuous columns of the `iris` dataset. Fill it in a colour of your choice.
+2. Start with the code from Example 2. Change it so that `Species` is now mapped to `shape` instead of `colour`. Which plot do you find more informative? What happens if you map `Species` to `size`?
 
-3. Start with the code from Example 2. Change it so that `Species` is now mapped to `shape` instead of `colour`. Which plot do you find more informative? What happens if you map `Species` to `size`?
+3. Start with the code from example 1. Try and include `Petal.Length` by mapping it to the different aesthetics `colour`, `size`, `alpha` (transparency) and `shape`. How does the behaviour of these aesthetics differ for continuous vs. categorical variables?
 
-4. Start with the code from example 1. Try and include `Petal.Length` by mapping it to the different aesthetics `colour`, `size` and `shape`. How does the behaviour of these aesthetics differ for continuous vs. categorical variables?
+4. Using `geom_histogram`, make a histogram for one of the continuous columns of the `iris` dataset. Fill it in a colour of your choice. Try the same with `geom_density`. Can you make three overlapping densities for each Species? (Hint: use the colour aesthetic, and set `alpha` to a value less than 1.) 
 
 5. Another aethetic to add additional variables to the plot are **facets* which split your plot into subplots. 
 
@@ -443,6 +450,8 @@ ggplot(data = tips, aes(x = total_bill, y = tip)) +
   geom_smooth()
 ```
 
+In this example, we can see that it is straigthforward to combine more than one gemoetry in a plot.
+
 Be careful when using geometries to fit smooth lines or densities. These are great tools for a first exploration but unless you understand exactly how they are generated, do not rely on them for inference.
 
 ### **Exercises**
@@ -458,14 +467,57 @@ Be careful when using geometries to fit smooth lines or densities. These are gre
   + facet_grid(time ~ day)
 ```
 
-5. 
-
 
 
 
 ### **Making it pretty**
 labels, legends, titles, manual colours (diamonds?), gg_themes, different scales?
 
+So far, we have made **exploratory** plots that help us discover relationships in the data. At the end of an analysis, the goal is a different one: We want to communicate our findings to someone else (for example in a report or a talk) and can use **explanatory plots** to support the audience's understanding.
+
+For this, we need to  make the plot understandable for someone who hasn't seen the raw data. We can also help the audience by making plots nice to look at.
+
+```{r, results = T, eval = T, echo =F}
+p <- ggplot(data = tips, aes(x = total_bill, y = tip))
+p + geom_point(aes(colour = sex, shape = sex), size = 2) +
+  scale_color_brewer(palette = "Set1", name = "Sex of bill payer") +
+  scale_shape_discrete(name = "Sex of bill payer", labels = c("Female", "Male")) +
+  geom_smooth(method = "lm") +
+  labs(title = "Tip given in a restaurant",
+       x = "Total bill in USD", y = "Tip in USD") +
+  facet_wrap(~time) +
+  theme(line = element_line(linetype = 1, colour = "black"), 
+        rect = element_rect(fill = "ivory", linetype = 0, 
+                            colour = NA), text = element_text(colour = "black", size = 10), 
+        title = element_text(family = "mono", size = rel(1), hjust = 0.5), 
+        axis.title = element_text(size = rel(1)), axis.text = element_text(face = "bold", 
+                                                                           size = rel(1)), axis.text.x = element_text(colour = NULL), 
+        axis.text.y = element_text(colour = NULL), axis.ticks = element_line(colour = NULL), 
+        axis.ticks.y = element_blank(), axis.ticks.x = element_line(colour = NULL), 
+        axis.line = element_line(), axis.line.y = element_blank(), 
+        legend.background = element_rect(), legend.position = "top", 
+        legend.direction = "horizontal", legend.box = "vertical", 
+        panel.background = element_rect(fill = "ivory"),
+        panel.grid = element_line(colour = NULL, linetype = 3), 
+        panel.grid.major = element_line(colour = "black"), 
+        panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(), 
+        plot.title = element_text(hjust = 0, face = "bold"), 
+        plot.margin = unit(c(1, 1, 1, 1), "lines"), strip.background = element_rect())
+
+```
+
+### **Exercises**
+In the following exercise, we'll start with this plot to then enhance it:
+```{r, results = F, eval = F}
+  ggplot(data = iris, aes(x = Sepal.Length, Sepal.Width)) + 
+  geom_point(aes(colour = Species))
+```
+
+1. Add a sensible title and axis labels using `+ labs(title = "Main title", x = "x-axis label", y = "y-axis label")`.
+
+2. A quick google search reveals that the species here are all different shades of purple. Change the colours in the plot so they match the species' colours by using `+ scale_colour_manual(values = c("maroon4", "orchid", "darkslateblue"))`. Feel free to change the colours to your own liking. A list of available colours in `R` can be found here: http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+
+3. If you're up for a challenge, try to recreate the example plot above. Lots of googling required!
 
 ### **Advanced Exercises**
 
@@ -477,6 +529,8 @@ Introduce some other ggplot geoms here
 Plot model outputs as well?
 
 1.  Using the `tips` dataset, create a new column calculating the percentage tip  (so if bill was £10 and tip was £1 then the tip percentage was 10%) and investigate whether `sex`, `day`, or `size` affected the percentage tip. Use whatever plots you feel appropriate
+
+for example geom_density
 
 
 ## **Further Resources**
