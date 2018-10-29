@@ -343,7 +343,7 @@ There are three essential elements in the grammar of graphics.
 
 | Element  |      Description     |  Examples |
 |----------|------------------|------------|
-| Data |  The dataset being plotted | iris, airquality |
+| Data |  The dataset being plotted | airquality, iris |
 | Aesthetics |    Scales onto which we map our data  |  position (x, y), colour, shape, size, fill |
 | Geometries | Visual elements in the plot| points, lines, text, bar |
 
@@ -367,6 +367,8 @@ str(iris)
 
 If you don't know what's going with your data yet, a scatterplot is usually a good place to start. In a scatterplot, two continuous variables are mapped to x and y coordinates.
 
+We start by making a simple scatterplot to explore the relationship between `Sepal.Length` and `Sepal.Width`.
+
 | Element  |Example|
 |----------|------------|
 | Data |  iris|
@@ -375,12 +377,12 @@ If you don't know what's going with your data yet, a scatterplot is usually a go
 
 ```{r, results = T}
 ggplot(data = iris) + 
-  geom_point(aes(x = Sepal.Length, Sepal.Width))
+  geom_point(aes(x = Sepal.Length, y= Sepal.Width))
 ```
 
 #### **2. Scatterplot and colour**
 
-We can extend the above plot to include information about the species by mapping `Species` to another aesthetic.
+The iris dataset contains information on three differnet species of iris. We can extend the above plot to include information about the species by mapping `Species` to another aesthetic. Here, we're choosing colour, but we could also map each species to a different shape.
 
 | Element  |Example|
 |----------|------------|
@@ -410,7 +412,7 @@ ggplot(iris, aes(x = Species, y = Sepal.Length)) +
   geom_boxplot(fill = "blue")
 ```
 
-Note that the aesthetic `fill` has not been mapped to any data but was set manually.
+Note that the here, no data has been mapped to the aesthetic `fill`. Rather, the filling colour was set manual and has no specific relationship with the data.
 
 ### **Exercises**
 
@@ -425,7 +427,7 @@ ggplot(data = iris, aes(x =Sepal.Length, y = Sepal.Width)) +
 
 3. Start with the code from example 1. Try and include `Petal.Length` by mapping it to the different aesthetics `colour`, `size`, `alpha` (transparency) and `shape`. How does the behaviour of these aesthetics differ for continuous vs. categorical variables?
 
-4. Using `geom_histogram`, make a histogram for one of the continuous columns of the `iris` dataset. Fill it in a colour of your choice. Try the same with `geom_density`. Can you make three overlapping densities for each Species? (Hint: use the colour aesthetic, and set `alpha` to a value less than 1.) 
+4. Using `geom_histogram`, make a histogram for one of the continuous columns of the `iris` dataset. Fill it in a colour of your choice. Try the same with `geom_density`. Can you make three overlapping densities for each Species? (Hint: use the colour aesthetic, and set the transparency `alpha` to a value less than 1.) 
 
 5. Another aethetic to add additional variables to the plot are **facets* which split your plot into subplots. 
 
@@ -438,19 +440,18 @@ What happens when you map `Species` to another aesthetic at the same time?
 
 ### **More geometries**
 
-So far, we have seen a scatterplot with `geom_point`, a histogram with `geom_histogram` and a boxplot with `geom_boxplot`. With a new dataset, we'll explore some more advanced geometries.
+So far, we have seen a scatterplot with `geom_point`, a histogram with `geom_histogram` and a boxplot with `geom_boxplot`. With the `tips` dataset from before, we'll explore some more advanced geometries. If you want more information about the data, you can open the help with `help(tips, package = "reshape2")`.
 
 ```{r, eval = T}
-data(tips, package = 'reshape2')
 str(tips)
 ```
-```{r, eval = T, echo = FALSE}
+```{r, eval = T, echo = TRUE}
 ggplot(data = tips, aes(x = total_bill, y = tip)) +
   geom_point(aes(color = sex)) +
-  geom_smooth()
+  geom_smooth(method = "loess")
 ```
 
-In this example, we can see that it is straigthforward to combine more than one gemoetry in a plot.
+In this example, we can see that it is straigthforward to combine more than just one geometry in a plot.
 
 Be careful when using geometries to fit smooth lines or densities. These are great tools for a first exploration but unless you understand exactly how they are generated, do not rely on them for inference.
 
@@ -460,7 +461,7 @@ Be careful when using geometries to fit smooth lines or densities. These are gre
 
 2. Add a linear regression line to the plot by using `geom_smooth(method = "lm")`. What happens when you change the method to `"loess"`? What seems more appropriate for this data?
 
-3. Add a regression line for each of the different times of day. You can do that by adding an aesthetic to `geom_smooth`, for example `aes(colour = time)`. Try other aesthetics like linetype too.
+3. Add a linear regression line for each of the different times of day. You can do that by adding an aesthetic to `geom_smooth`, for example `aes(colour = time)`. Try other aesthetics like linetype too.
 
 4. Similar to `facet_wrap` in exercise 5 of the previous section, `facet_grid` allows you to do the same thing for two categorical variables. Try adding the following to your plot. What do the empty cells mean?
 ```{r, results = F, eval = F}
@@ -471,7 +472,6 @@ Be careful when using geometries to fit smooth lines or densities. These are gre
 
 
 ### **Making it pretty**
-labels, legends, titles, manual colours (diamonds?), gg_themes, different scales?
 
 So far, we have made **exploratory** plots that help us discover relationships in the data. At the end of an analysis, the goal is a different one: We want to communicate our findings to someone else (for example in a report or a talk) and can use **explanatory plots** to support the audience's understanding.
 
@@ -515,7 +515,7 @@ In the following exercise, we'll start with this plot to then enhance it:
 
 1. Add a sensible title and axis labels using `+ labs(title = "Main title", x = "x-axis label", y = "y-axis label")`.
 
-2. A quick google search reveals that the species here are all different shades of purple. Change the colours in the plot so they match the species' colours by using `+ scale_colour_manual(values = c("maroon4", "orchid", "darkslateblue"))`. Feel free to change the colours to your own liking. A list of available colours in `R` can be found here: http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+2. A quick google search reveals that the three species in the dataset are all different shades of purple. Change the colours in the plot so they match the species' colours by using `+ scale_colour_manual(values = c("maroon4", "orchid", "darkslateblue"))`. Feel free to change the colours to your own liking. A list of available colours in `R` can be found here: http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
 
 3. If you're up for a challenge, try to recreate the example plot above. Lots of googling required!
 
@@ -523,14 +523,10 @@ In the following exercise, we'll start with this plot to then enhance it:
 
 These exercises combine the features of `dplyr` and `ggplot2` together.
 
-Pipe + wrangle to get summaries, then pipe into ggplot() to get plot
-Introduce some other ggplot geoms here
+1.  Using the `tips` dataset, create a new column calculating the percentage tip  (so if bill was £10 and tip was £1 then the tip percentage was 10%) and investigate whether `sex`, `day`, or `size` affected the percentage tip. Use whatever plots you feel appropriate.
 
-Plot model outputs as well?
+2. Starting with the `airquality` dataset, create a scatterplot with temperature in degree Celcius on the x-axis and ozone levels on the y-axis. Create new columns as you need to with `mutate` and filter out all rows that contain `NA`s in the relevant columns before plotting. If you're feeling adventurous, add information about the season to the plot, using the function you wrote earlier, and mapping it to an aesthetic of your choice.
 
-1.  Using the `tips` dataset, create a new column calculating the percentage tip  (so if bill was £10 and tip was £1 then the tip percentage was 10%) and investigate whether `sex`, `day`, or `size` affected the percentage tip. Use whatever plots you feel appropriate
-
-for example geom_density
 
 
 ## **Further Resources**
