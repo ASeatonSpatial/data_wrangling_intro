@@ -99,7 +99,7 @@ filter(airquality, Month %in% c(5,6))
 ### **Exercises** 
 
 1. Filter the aiquality data to obtain all records in August
-2. Further filter the August data to see only records with Temperature between 60 and 65
+2. Further filter the August data to see only records with Temperature between 70 and 75
 3. Filter to get all records where Ozone is not `NA`.  HINT:  recall the NOT operator `!`  e.g.  `!(Temp < 60)` is equivalent to `Temp >= 60`    
 4. Select all records on the first 5 days of each month.
 5. Calling filter() once only, select all records on the first 5 days of June and July
