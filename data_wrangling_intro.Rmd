@@ -390,12 +390,15 @@ The iris dataset contains information on three differnet species of iris. We can
 | Aesthetics | x =  Sepal.Length, y = Sepal.Width, colour = Species|
 | Geometries | points |
 
-Aesthetics can be placed either in the `ggplot` function and so set globally for the whole plot, or in the `geom` function and so set only for that geometry.
+Note that the mapping to aesthetics can be placed either in the `ggplot` function or in the `geom` function. By placing aesthetics mapping in the `ggplot` function, we set them globally for all geometries in the plot, unless they're overwritten in a `geom` function. By placing the aesthetics mapping in the `geom` function, they are only set for that geometry.
+
 
 ```{r, results = T}
 ggplot(data = iris, aes(x = Sepal.Length, Sepal.Width)) + 
   geom_point(aes(colour = Species))
 ```
+
+
 
 #### **3. Group and boxplot**
 
@@ -427,7 +430,7 @@ ggplot(data = iris, aes(x =Sepal.Length, y = Sepal.Width)) +
 
 3. Start with the code from example 1. Try and include `Petal.Length` by mapping it to the different aesthetics `colour`, `size`, `alpha` (transparency) and `shape`. How does the behaviour of these aesthetics differ for continuous vs. categorical variables?
 
-4. Using `geom_histogram`, make a histogram for one of the continuous columns of the `iris` dataset. Fill it in a colour of your choice. Try the same with `geom_density`. Can you make three overlapping densities for each Species? (Hint: use the colour aesthetic, and set the transparency `alpha` to a value less than 1.) 
+4. Using `geom_histogram`, make a histogram for one of the continuous columns of the `iris` dataset. Note that this geometry only needs a `x` aesthetic (the continuous variable you're interested in) and no `y` aesthetic. Fill it in a colour of your choice. Try the same with `geom_density`. Can you make three overlapping densities for each Species? (Hint: use the colour aesthetic, and set the transparency `alpha` to a value less than 1.) 
 
 5. Another aethetic to add additional variables to the plot are **facets* which split your plot into subplots. 
 
@@ -467,7 +470,6 @@ Be careful when using geometries to fit smooth lines or densities. These are gre
 ```{r, results = F, eval = F}
   + facet_grid(time ~ day)
 ```
-
 
 
 
