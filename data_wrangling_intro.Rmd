@@ -28,7 +28,7 @@ Create as many R scripts as you feel you need to work through the material.  You
 
 In this workshop, we will need three packages: `dplyr` for data manipulation, `ggplot2` for plotting and `reshape2` for one of the datasets. If you haven't yet, you can install them with the following code. (You only need to do this once.)
 
-```{r, results = F, message = F, warning = F}
+```{r, results = F, message = F, warning = F, eval=F}
 install.packages(c("dplyr", "ggplot2", "reshape2"))
 ```
 
