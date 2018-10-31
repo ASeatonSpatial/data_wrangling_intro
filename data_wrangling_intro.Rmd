@@ -295,7 +295,7 @@ tips %>%
   summarise(mean_tip = mean(tip))
 ```
 
-Note that we now have 4 possible combinations of each smoker.
+Note that we now have 4 possible combinations of sex and smoker.
 Suppose we were worried that the sample size in each group was quite low, we could add a column that counts the number of records in each group using the `n()` function.
 
 ```{r}
