@@ -17,6 +17,9 @@ This material borrows heavily from the excellent textbook "R for Data Science" b
 
 We encourage you to see these notes as a starting point for further learning - 2 hours is not enough time to learn very much!  
 
+The source code for these notes can be found at https://github.com/ASeatonSpatial/data_wrangling_intro
+
+
 ## **Set up**
 
 Create as many R scripts as you feel you need to work through the material.  You can save it all in one long script or save a script for each section.
@@ -539,7 +542,7 @@ We have just scratched the surface of `dplyr` and `ggplot2` and there are many o
 * "R for Data Science" by Hadley Wickham, http://r4ds.had.co.nz/
 * ggplot2 website - lots of tips and tricks https://ggplot2.tidyverse.org/
 * tidyverse website - an overview of other related packages that are designed to help your analysis workflow https://www.tidyverse.org/packages/
-* 
+* pdf "cheatsheets" for ggplot2 and dplry are in the github repository for this course https://github.com/ASeatonSpatial/data_wrangling_intro
 * https://stackoverflow.com/ is a great place to search for tidyverse related questions.  Chances are your problem has been encountered before!  Search for package related questions using the tags e.g. [ggplot2]
 
 
